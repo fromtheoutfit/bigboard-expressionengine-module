@@ -47,8 +47,6 @@ class Bigboard_ext
         // lang
         $this->EE->lang->loadfile('bigboard');
 
-        // load configs
-        $this->config = $this->EE->bb->get_config();
     }
 
     /**
@@ -142,6 +140,9 @@ class Bigboard_ext
 
     public function entry_submission_end($id, $meta, $data)
     {
+        // load configs
+        $this->config = $this->EE->bb->get_config();
+
         $entry_type = $data['entry_id'] > 0 ? 'updated' : 'new';
 
         if ($this->entry_submission_config_check($meta['channel_id'], $data['entry_id']))
@@ -180,6 +181,9 @@ class Bigboard_ext
 
     public function insert_comment_end($data, $comment_moderate, $comment_id)
     {
+        // load configs
+        $this->config = $this->EE->bb->get_config();
+
         if ($this->entry_comment_config_check($data['channel_id']))
         {
             // API

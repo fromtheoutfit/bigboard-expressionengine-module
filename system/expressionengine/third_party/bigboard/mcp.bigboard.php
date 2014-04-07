@@ -52,7 +52,7 @@ class Bigboard_mcp
 
         // variables
         $channels  = $this->EE->api_channel_structure->get_channels((int)$this->site_id);
-        $templates = $this->EE->template_model->get_templates(ee()->config->item('site_id'));
+        $templates = $this->EE->template_model->get_templates($this->EE->config->item('site_id'));
 
         $config = $this->EE->bb->get_config();
 

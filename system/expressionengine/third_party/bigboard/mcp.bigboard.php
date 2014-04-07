@@ -42,6 +42,9 @@ class Bigboard_mcp
         // page title
         $this->_cp_page_title($this->EE->lang->line('bigboard_mcp_index'));
 
+        // javascript
+        $this->EE->cp->load_package_js('bigboard');
+
         // models
         $this->EE->load->model('template_model');
 
@@ -82,7 +85,7 @@ class Bigboard_mcp
         $data = array();
         foreach ($_POST as $k => $v)
         {
-            if ($k !== 'submit')
+            if ($k !== 'submit' && $k !== 'entry_select_all')
             {
                 $kboom = explode('-', $k);
                 $type  = $kboom[0];

@@ -28,7 +28,7 @@ if ($channels->num_rows())
     $data .= '<h2>' . lang('bigboard_channel_entry_created_heading') . '</h2>';
     $data .= '<p>' . lang('bigboard_channel_entry_created_desc') . '</p>';
 
-    $this->table->set_heading(array(lang('bigboard_selected'), lang('bigboard_channels')));
+    $this->table->set_heading(array('<input type="checkbox" id="entry_select_all" name="entry_select_all" value="" />', lang('bigboard_channels')));
     foreach ($channels->result() as $channel)
     {
         $selected = (in_array($channel->channel_id, $entry_created_channels)) ? TRUE : FALSE;
@@ -53,7 +53,7 @@ if ($channels->num_rows())
     $data .= '<h2>' . lang('bigboard_channel_entry_updated_heading') . '</h2>';
     $data .= '<p>' . lang('bigboard_channel_entry_updated_desc') . '</p>';
 
-    $this->table->set_heading(array(lang('bigboard_selected'), lang('bigboard_channels')));
+    $this->table->set_heading(array('<input type="checkbox" id="entry_select_all" name="entry_select_all" value="" />', lang('bigboard_channels')));
     foreach ($channels->result() as $channel)
     {
         $selected = (in_array($channel->channel_id, $entry_updated_channels)) ? TRUE : FALSE;
@@ -79,7 +79,7 @@ if ($channels->num_rows())
     $data .= '<h2>' . lang('bigboard_channel_entry_comment_heading') . '</h2>';
     $data .= '<p>' . lang('bigboard_channel_entry_comment_desc') . '</p>';
 
-    $this->table->set_heading(array(lang('bigboard_selected'), lang('bigboard_channels')));
+    $this->table->set_heading(array('<input type="checkbox" id="entry_select_all" name="entry_select_all" value="" />', lang('bigboard_channels')));
     foreach ($channels->result() as $channel)
     {
         $selected = (in_array($channel->channel_id, $entry_commented_channels)) ? TRUE : FALSE;

@@ -124,7 +124,6 @@ class Bigboard_ext
     public function settings()
     {
         $settings = array();
-
         return $settings;
     }
 
@@ -143,27 +142,40 @@ class Bigboard_ext
         // load configs
         $this->config = $this->EE->bb->get_config();
 
+        // determine if this is a new or updated entry
         $entry_type = $data['entry_id'] > 0 ? 'updated' : 'new';
 
+        // ensure that we should be listening for entry changes on this channel
         if ($this->entry_submission_config_check($meta['channel_id'], $data['entry_id']))
         {
-            // API
+            // ee apis
             $this->EE->load->library('api');
             $this->EE->api->instantiate('channel_structure');
+
+            // get the channel, member and template information
             $channel  = $this->EE->api_channel_structure->get_channel_info((int)$meta['channel_id']);
-            $member   = $this->EE->bb->get_member($meta['author_id']);
+            $member   = $this->EE->bb->get_member($this->EE->session->userdata('member_id'));
             $template = (array_key_exists((int)$meta['channel_id'], $this->config['channel_templates'])) ? $this->config['channel_templates'][(int)$meta['channel_id']] : 0;
+
+            // determine if we should use pages information if available
             $use_pages = (in_array((int)$meta['channel_id'], $this->config['pages_channels'])) ? TRUE : FALSE;
-            $url      = $this->EE->bb->get_url($this->EE->input->post('url_title'), $id, $template, $use_pages);
+
+            // get the url
+            $url = $this->EE->bb->get_url($this->EE->input->post('url_title'), $id, $template, $use_pages);
 
             if ($member->num_rows() > 0 && $channel->num_rows() > 0)
             {
+                // get the specific member and channel information
                 $m  = $member->row();
                 $ch = $channel->row();
+
+                // post to bigboard
                 $this->bigboard($m->email, $ch->channel_title . ': ' . $meta['title'], $this->EE->lang->line('bigboard_entry_' . $entry_type), $url);
             }
 
+            // free up the channel and member objects
             $member->free_result();
+            $channel->free_result();
         }
 
         return TRUE;
@@ -184,21 +196,30 @@ class Bigboard_ext
         // load configs
         $this->config = $this->EE->bb->get_config();
 
+        // ensure that we should be listening for entry comments on this channel
         if ($this->entry_comment_config_check($data['channel_id']))
         {
-            // API
+            // ee apis
             $this->EE->load->library('api');
             $this->EE->api->instantiate('channel_structure');
+
+            // get the channel, member and template information
             $channel  = $this->EE->api_channel_structure->get_channel_info((int)$data['channel_id']);
             $entry    = $this->EE->bb->get_channel_details($data['entry_id']);
             $template = (array_key_exists((int)$data['channel_id'], $this->config['channel_templates'])) ? $this->config['channel_templates'][(int)$data['channel_id']] : 0;
+            // determine if we should use pages information if available
             $use_pages = (in_array((int)$data['channel_id'], $this->config['pages_channels'])) ? TRUE : FALSE;
 
             if ($channel->num_rows() > 0 && $entry->num_rows() > 0)
             {
-                $ch  = $channel->row();
-                $e   = $entry->row();
+                // get the specific member and channel information
+                $ch = $channel->row();
+                $e  = $entry->row();
+
+                // get the url
                 $url = $this->EE->bb->get_url($e->url_title, $data['entry_id'], $template, $use_pages);
+
+                // post to bigboard
                 $this->bigboard($data['email'], $ch->channel_title . ': ' . $e->title, lang('bigboard_entry_commented'), $url);
             }
 
@@ -227,17 +248,21 @@ class Bigboard_ext
         if (isset($this->config['api_key']))
         {
 
-            // get it on the board!
-            $p['events'][0]['email']   = $email;
-            $p['events'][0]['summary'] = $summary;
-            $p['events'][0]['label']   = $label;
-            $p['events'][0]['url']     = $url;
-            $p['events'][0]['time']    = time();
+            // set event information
+            $p['events'][0] = array(
+                'email'   => $email,
+                'summary' => $summary,
+                'label'   => $label,
+                'url'     => $url,
+                'time'    => time(),
+            );
 
+            // set headers
             $headers[] = 'Content-Type: application/json';
             $headers[] = 'Accept: application/json';
             $headers[] = 'X-BigBoard-Token: ' . $this->config['api_key'];
 
+            // get it on the board!
             $ch = curl_init();
 
             $options = array(

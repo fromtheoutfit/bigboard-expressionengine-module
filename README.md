@@ -1,7 +1,7 @@
 ExpressionEngine Module for BigBoard.us
 ================================
 
-Update your [http://bigboard.us](BigBoard.us) activity stream when anyone creates, edits or comments on ExpressionEngine entries.
+Update your [BigBoard.us](http://bigboard.us) activity stream when anyone creates, edits or comments on ExpressionEngine entries.
 
 ## Installation
 1. Download the BigBoard Module.
